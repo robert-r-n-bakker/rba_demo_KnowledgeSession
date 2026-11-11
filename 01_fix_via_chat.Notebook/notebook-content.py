@@ -1,5 +1,12 @@
 # Fabric notebook source
 
+# METADATA ********************
+
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   }
+# META }
 
 # MARKDOWN ********************
 
@@ -14,10 +21,25 @@ from pyspark.sql import functions as F
 spark.conf.set("spark.sql.session.timeZone", "UTC")   # make the demo deterministic
 SRC = "Files/chat/chat_messages.json"
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
 # CELL ********************
 
 df = spark.read.option("multiLine", True).json(SRC)
+# Use display() for rich tabular preview in Fabric notebooks
 display(df.limit(5))
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
 
 # CELL ********************
 
@@ -28,3 +50,10 @@ display(df.limit(5))
    .orderBy(F.desc("count"))
    .limit(10)
    .show())
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
