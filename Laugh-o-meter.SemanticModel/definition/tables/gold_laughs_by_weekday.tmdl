@@ -1,0 +1,47 @@
+table gold_laughs_by_weekday
+
+	measure 'Weekday Messages' = SUM(gold_laughs_by_weekday[messages])
+		formatString: #,0
+
+	measure 'Weekday Laugh Reactions' = SUM(gold_laughs_by_weekday[laugh_reactions])
+		formatString: #,0
+
+	measure 'Weekday Laughs per Message' = DIVIDE([Weekday Laugh Reactions], [Weekday Messages])
+		formatString: 0.00
+
+	column weekday_num
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: weekday_num
+
+	column weekday_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: weekday_name
+		sortByColumn: weekday_num
+
+	column messages
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: messages
+
+	column laugh_reactions
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: laugh_reactions
+
+	column laughs_per_message
+		dataType: double
+		summarizeBy: none
+		sourceColumn: laughs_per_message
+
+	partition gold_laughs_by_weekday = entity
+		mode: directLake
+		source
+			entityName: gold_laughs_by_weekday
+			schemaName: dbo
+			expressionSource: 'DirectLake - lh_chat'
+

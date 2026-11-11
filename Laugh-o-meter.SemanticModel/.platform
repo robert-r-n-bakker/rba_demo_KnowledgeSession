@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Laugh-o-meter",
+    "description": "Direct Lake model over gold_laughs_by_hour and gold_laughs_by_weekday"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "840381ef-d0f8-41c4-b4ea-8967bb0b0dd1"
+  }
+}

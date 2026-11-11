@@ -48,6 +48,14 @@ For new gold tables, add a final assert cell that checks:
 - There are no null group keys.
 - `laughs_per_message` is at least 0.
 
+## Semantic model (Direct Lake)
+- Connect with Direct Lake on OneLake: `AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/<workspaceId>/<lakehouseId>")`. Set `schemaName: dbo` on each partition because `lh_chat` is schema-enabled.
+- Measures per gold table. Prefix the names so they don't clash with the `messages` column (the check ignores case), e.g. `Total Messages` on the hour table and `Weekday Messages` on the weekday table:
+  - `Total Messages = SUM(<table>[messages])`
+  - `Total Laugh Reactions = SUM(<table>[laugh_reactions])`
+  - `Laughs per Message = DIVIDE([Total Laugh Reactions], [Total Messages])`
+- Sort `weekday_name` by `weekday_num`.
+
 ## Guardrails
 - **Never edit the VALIDATION cell** or its expected values. Fix the pipeline instead.
 - Use the IANA zone `Europe/Amsterdam`, never a fixed `+1`/`+2` offset, so DST is handled.

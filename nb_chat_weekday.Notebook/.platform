@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_chat_weekday",
+    "description": "Builds gold_laughs_by_weekday (Amsterdam time) from silver_chat_messages"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "949bf738-b9d4-46ad-941e-69d1466eb715"
+  }
+}

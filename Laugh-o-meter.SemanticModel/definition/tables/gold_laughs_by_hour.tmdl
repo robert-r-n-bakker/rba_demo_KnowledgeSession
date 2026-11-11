@@ -1,0 +1,41 @@
+table gold_laughs_by_hour
+
+	measure 'Total Messages' = SUM(gold_laughs_by_hour[messages])
+		formatString: #,0
+
+	measure 'Total Laugh Reactions' = SUM(gold_laughs_by_hour[laugh_reactions])
+		formatString: #,0
+
+	measure 'Laughs per Message' = DIVIDE([Total Laugh Reactions], [Total Messages])
+		formatString: 0.00
+
+	column hour_local
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: hour_local
+
+	column messages
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: messages
+
+	column laugh_reactions
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: laugh_reactions
+
+	column laughs_per_message
+		dataType: double
+		summarizeBy: none
+		sourceColumn: laughs_per_message
+
+	partition gold_laughs_by_hour = entity
+		mode: directLake
+		source
+			entityName: gold_laughs_by_hour
+			schemaName: dbo
+			expressionSource: 'DirectLake - lh_chat'
+

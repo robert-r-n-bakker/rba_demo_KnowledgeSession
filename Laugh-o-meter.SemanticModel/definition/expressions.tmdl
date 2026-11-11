@@ -1,0 +1,6 @@
+expression 'DirectLake - lh_chat' =
+		let
+		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/41a0bda8-1019-448a-b360-11615d7ca374/8b0c4602-44f5-4558-a916-69a155f01b4c", [HierarchicalNavigation=true])
+		in
+		    Source
+
