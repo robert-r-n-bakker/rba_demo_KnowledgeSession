@@ -99,6 +99,18 @@ display(gold)
 
 # CELL ********************
 
+df = spark.sql("SELECT * FROM lh_chat.dbo.gold_laughs_by_weekday LIMIT 1000")
+display(df)
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 # 4. VALIDATION
 g = spark.table("gold_laughs_by_weekday")
 h = spark.table("gold_laughs_by_hour")   # built by 02_agent_fix_loop
