@@ -47,7 +47,8 @@ SRC = "Files/chat/chat_messages.json"
 # CELL ********************
 
 # 1. Load the raw export
-raw = spark.read.json(SRC)
+# The export is a pretty-printed JSON file; use multiLine=True so Spark parses it correctly
+raw = spark.read.option("multiLine", True).json(SRC)
 raw.select("message_id", "created_utc", "author_alias", "reactions").show(3, truncate=False)
 
 # METADATA ********************
@@ -78,9 +79,11 @@ print(silver.count(), "messages")
 
 # 3. Laugh reactions per message
 LAUGHS = ["😆", "😄", "🤣"]
+# Schema from sample: reactions is an array of structs with fields `count` and `type`
+# So filter on `type` and sum `count`
 laughs = (silver
     .select("message_id", F.explode_outer("reactions").alias("r"))
-    .where(F.col("r.reactionType").isin(LAUGHS))
+    .where(F.col("r.type").isin(LAUGHS))
     .groupBy("message_id")
     .agg(F.sum("r.count").alias("laugh_reactions")))
 
@@ -94,9 +97,11 @@ laughs = (silver
 # CELL ********************
 
 # 4. Gold: the Laugh-o-meter by hour of day (Amsterdam time)
+# Convert UTC timestamps to Europe/Amsterdam, then take the local hour
 gold = (silver
     .join(laughs, "message_id", "left")
-    .withColumn("hour_local", F.hour("created_ts"))
+    .withColumn("created_ts_local", F.from_utc_timestamp("created_ts", "Europe/Amsterdam"))
+    .withColumn("hour_local", F.hour("created_ts_local"))
     .groupBy("hour_local")
     .agg(F.count("*").alias("messages"),
          F.coalesce(F.sum("laugh_reactions"), F.lit(0)).alias("laugh_reactions"))
