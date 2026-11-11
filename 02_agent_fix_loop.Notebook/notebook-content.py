@@ -22,8 +22,13 @@
 
 # MARKDOWN ********************
 
-# # Step 2 - SOLUTION (fallback)
-# The same notebook with all three fixes applied.
+# # Step 2 - Agent fixes it, runs it, checks it
+# This notebook has **three seeded bugs** that only show up one at a time, plus a validation cell at the end.
+# 
+# Prompt for the Copilot chat pane:
+# > Make this notebook run end-to-end. Run each cell, fix any error, and keep going until the final VALIDATION cell passes. Do not change the validation cell. Summarize every fix you made.
+# 
+# Choose *Allow and automatically approve* so the audience sees the loop.
 
 # CELL ********************
 
@@ -41,8 +46,8 @@ SRC = "Files/chat/chat_messages.json"
 
 # CELL ********************
 
-# 1. Load the raw export (the file is a JSON array, so multiLine is required)
-raw = spark.read.option("multiLine", True).json(SRC)
+# 1. Load the raw export
+raw = spark.read.json(SRC)
 raw.select("message_id", "created_utc", "author_alias", "reactions").show(3, truncate=False)
 
 # METADATA ********************
@@ -75,7 +80,7 @@ print(silver.count(), "messages")
 LAUGHS = ["😆", "😄", "🤣"]
 laughs = (silver
     .select("message_id", F.explode_outer("reactions").alias("r"))
-    .where(F.col("r.type").isin(LAUGHS))
+    .where(F.col("r.reactionType").isin(LAUGHS))
     .groupBy("message_id")
     .agg(F.sum("r.count").alias("laugh_reactions")))
 
@@ -91,7 +96,7 @@ laughs = (silver
 # 4. Gold: the Laugh-o-meter by hour of day (Amsterdam time)
 gold = (silver
     .join(laughs, "message_id", "left")
-    .withColumn("hour_local", F.hour(F.from_utc_timestamp("created_ts", "Europe/Amsterdam")))
+    .withColumn("hour_local", F.hour("created_ts"))
     .groupBy("hour_local")
     .agg(F.count("*").alias("messages"),
          F.coalesce(F.sum("laugh_reactions"), F.lit(0)).alias("laugh_reactions"))

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "02_agent_fix_loop_SOLUTION",
+    "displayName": "02_agent_fix_loop",
     "description": "New notebook"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "091b411d-75f5-a21b-4188-0dbe2bfdaa43"
+    "logicalId": "b777e1c5-005b-a27f-4c4c-62172beecc59"
   }
 }
