@@ -3,4 +3,9 @@ expression 'DirectLake - lh_chat' =
 		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/41a0bda8-1019-448a-b360-11615d7ca374/8b0c4602-44f5-4558-a916-69a155f01b4c", [HierarchicalNavigation=true])
 		in
 		    Source
+	lineageTag: f82e56d8-14d5-420e-985a-1b68d5038a0e
+
+	annotation PBI_IncludeFutureArtifacts = False
+
+	annotation PBI_RemovedChildren = [{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[dbo].[silver_chat_messages]"}},"objectType":"Table"}]
 

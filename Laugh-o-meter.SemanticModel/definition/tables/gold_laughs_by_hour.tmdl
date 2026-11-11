@@ -1,36 +1,59 @@
 table gold_laughs_by_hour
+	lineageTag: 1bde69fc-80f7-4e30-a381-2dcffe70e277
+	sourceLineageTag: [dbo].[gold_laughs_by_hour]
 
 	measure 'Total Messages' = SUM(gold_laughs_by_hour[messages])
 		formatString: #,0
+		lineageTag: 84375887-fea1-461d-8d3e-88453203308f
 
 	measure 'Total Laugh Reactions' = SUM(gold_laughs_by_hour[laugh_reactions])
 		formatString: #,0
+		lineageTag: 9f9acc2c-2b7c-48b3-8374-522ac7fd82f6
 
 	measure 'Laughs per Message' = DIVIDE([Total Laugh Reactions], [Total Messages])
 		formatString: 0.00
+		lineageTag: f53190f9-edd5-445a-a899-c34769a48d06
 
 	column hour_local
 		dataType: int64
 		formatString: 0
-		summarizeBy: none
+		lineageTag: b6075341-c719-4547-aae1-c98125880a91
+		sourceLineageTag: hour_local
+		summarizeBy: sum
 		sourceColumn: hour_local
+
+		annotation SummarizationSetBy = Automatic
 
 	column messages
 		dataType: int64
 		formatString: 0
+		lineageTag: 3de2bbc6-74a3-4279-9c3f-a6a989ddbf2a
+		sourceLineageTag: messages
 		summarizeBy: sum
 		sourceColumn: messages
+
+		annotation SummarizationSetBy = Automatic
 
 	column laugh_reactions
 		dataType: int64
 		formatString: 0
+		lineageTag: 9333f22f-2226-48f9-8e2f-f16d8fa4873f
+		sourceLineageTag: laugh_reactions
 		summarizeBy: sum
 		sourceColumn: laugh_reactions
 
+		annotation SummarizationSetBy = Automatic
+
 	column laughs_per_message
 		dataType: double
-		summarizeBy: none
+		lineageTag: 7227c563-2874-468f-b32b-6a1bf6abd4cd
+		sourceLineageTag: laughs_per_message
+		summarizeBy: sum
 		sourceColumn: laughs_per_message
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition gold_laughs_by_hour = entity
 		mode: directLake

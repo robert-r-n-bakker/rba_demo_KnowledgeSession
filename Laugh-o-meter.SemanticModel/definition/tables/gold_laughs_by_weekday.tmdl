@@ -1,42 +1,68 @@
 table gold_laughs_by_weekday
+	lineageTag: 0b84be32-5386-4bc3-9972-c6f0a4b1e689
+	sourceLineageTag: [dbo].[gold_laughs_by_weekday]
 
 	measure 'Weekday Messages' = SUM(gold_laughs_by_weekday[messages])
 		formatString: #,0
+		lineageTag: 0f69d7bd-b2c6-4dab-bde7-8a2b3236614f
 
 	measure 'Weekday Laugh Reactions' = SUM(gold_laughs_by_weekday[laugh_reactions])
 		formatString: #,0
+		lineageTag: 49a4c93d-cc8d-4853-88a1-e5be2a3b3d84
 
 	measure 'Weekday Laughs per Message' = DIVIDE([Weekday Laugh Reactions], [Weekday Messages])
 		formatString: 0.00
+		lineageTag: d5657773-fd54-40f6-9f16-ee8e9f636331
 
 	column weekday_num
 		dataType: int64
 		formatString: 0
-		summarizeBy: none
+		lineageTag: e1330a14-daf0-4ba4-a023-01721121ff03
+		sourceLineageTag: weekday_num
+		summarizeBy: sum
 		sourceColumn: weekday_num
+
+		annotation SummarizationSetBy = Automatic
 
 	column weekday_name
 		dataType: string
+		lineageTag: f1e63491-506c-4f42-ab91-873d083e2de0
+		sourceLineageTag: weekday_name
 		summarizeBy: none
 		sourceColumn: weekday_name
-		sortByColumn: weekday_num
+
+		annotation SummarizationSetBy = Automatic
 
 	column messages
 		dataType: int64
 		formatString: 0
+		lineageTag: be9b3aeb-5032-4170-8510-3dd6e09cc69e
+		sourceLineageTag: messages
 		summarizeBy: sum
 		sourceColumn: messages
+
+		annotation SummarizationSetBy = Automatic
 
 	column laugh_reactions
 		dataType: int64
 		formatString: 0
+		lineageTag: 6ae5eee4-db74-4caf-8fac-d3366d47891a
+		sourceLineageTag: laugh_reactions
 		summarizeBy: sum
 		sourceColumn: laugh_reactions
 
+		annotation SummarizationSetBy = Automatic
+
 	column laughs_per_message
 		dataType: double
-		summarizeBy: none
+		lineageTag: de61e823-efe3-4d1a-86cf-71ba97695920
+		sourceLineageTag: laughs_per_message
+		summarizeBy: sum
 		sourceColumn: laughs_per_message
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition gold_laughs_by_weekday = entity
 		mode: directLake

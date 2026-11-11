@@ -3,6 +3,10 @@ model Model
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	sourceQueryCulture: en-US
 
+annotation PBI_QueryOrder = ["DirectLake - lh_chat"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
 ref table gold_laughs_by_hour
 ref table gold_laughs_by_weekday
 
