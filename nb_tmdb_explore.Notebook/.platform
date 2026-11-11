@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_tmdb_explore"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ccd97658-08dd-9159-4b2b-925a5566bab4"
+  }
+}

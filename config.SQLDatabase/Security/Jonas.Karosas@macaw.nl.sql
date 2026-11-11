@@ -1,0 +1,6 @@
+CREATE USER [Jonas.Karosas@macaw.nl]
+    WITH SID = 0xDA8A166919C2A24191B32E935787150A, TYPE = E;
+
+
+GO
+

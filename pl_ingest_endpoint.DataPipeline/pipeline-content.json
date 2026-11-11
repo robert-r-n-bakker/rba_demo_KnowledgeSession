@@ -1,0 +1,279 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "WebActivity",
+        "typeProperties": {
+          "method": "GET",
+          "relativeUrl": {
+            "value": "@concat(pipeline().parameters.relative_url, '&page=1')",
+            "type": "Expression"
+          },
+          "headers": {
+            "Authorization": {
+              "value": "@concat('Bearer ', pipeline().parameters.tmdb_token)",
+              "type": "Expression"
+            }
+          }
+        },
+        "externalReferences": {
+          "connection": "322f3951-e5c4-4d12-8bed-dba1f3331cba"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": true,
+          "secureOutput": false
+        },
+        "name": "Get first page",
+        "dependsOn": []
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "pages",
+          "value": {
+            "value": "@range(1, if(pipeline().parameters.is_paged, min(activity('Get first page').output.total_pages, pipeline().parameters.max_pages), 1))",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "pages",
+        "dependsOn": [
+          {
+            "activity": "Get first page",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "items": {
+            "value": "@variables('pages')",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "RestSource",
+                  "requestMethod": "GET",
+                  "additionalHeaders": {
+                    "Authorization": {
+                      "value": "@concat('Bearer ', pipeline().parameters.tmdb_token)",
+                      "type": "Expression"
+                    }
+                  },
+                  "paginationRules": {
+                    "supportRFC5988": "true"
+                  },
+                  "httpRequestTimeout": "00:01:40",
+                  "requestInterval": "00.00:00:00.010",
+                  "datasetSettings": {
+                    "type": "RestResource",
+                    "typeProperties": {
+                      "relativeUrl": {
+                        "value": "@concat(pipeline().parameters.relative_url, '&page=', string(item()))",
+                        "type": "Expression"
+                      }
+                    },
+                    "schema": [],
+                    "externalReferences": {
+                      "connection": "a244e833-044f-4c32-8f48-b88f6182c3bc"
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "JsonSink",
+                  "formatSettings": {
+                    "type": "JsonWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobStorageWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "Json",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": {
+                          "value": "@concat(\n    pipeline().parameters.target_folder,\n    '/',\n    formatDateTime(pipeline().parameters.run_date,'yyyy-MM-dd')\n)",
+                          "type": "Expression"
+                        },
+                        "fileName": {
+                          "value": "@concat('page_', string(item()), '.json')",
+                          "type": "Expression"
+                        }
+                      }
+                    },
+                    "schema": {},
+                    "linkedService": {
+                      "name": "landing",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "65263b0d-04d4-ad65-4dab-174c5c75dcaf",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 3,
+                "retryIntervalInSeconds": 30,
+                "secureInput": true,
+                "secureOutput": false
+              },
+              "name": "Copy data1",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "ForEach1",
+        "dependsOn": [
+          {
+            "activity": "pages",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Script",
+        "typeProperties": {
+          "scripts": [
+            {
+              "text": {
+                "value": "INSERT INTO ctl.run_log\n(\n    run_id,\n    endpoint_name,\n    pages_loaded,\n    status,\n    started_at,\n    ended_at,\n    error_message\n)\nVALUES\n(\n    '@{pipeline().RunId}',\n    '@{pipeline().parameters.endpoint_name}',\n    @{length(variables('pages'))},\n    'SUCCESS',\n    GETDATE(),\n    GETDATE(),\n    NULL\n);",
+                "type": "Expression"
+              },
+              "type": "NonQuery"
+            }
+          ],
+          "scriptBlockExecutionTimeout": "02:00:00"
+        },
+        "connectionSettings": {
+          "name": "config",
+          "properties": {
+            "type": "FabricSqlDatabase",
+            "typeProperties": {
+              "artifactId": "25e0f5c8-01d0-9409-4f1e-187509d9076e",
+              "workspaceId": "00000000-0000-0000-0000-000000000000"
+            },
+            "externalReferences": {
+              "connection": "61d862fb-1c5e-49f0-bbd6-32e95af7a708"
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Script1",
+        "dependsOn": [
+          {
+            "activity": "ForEach1",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Script",
+        "typeProperties": {
+          "scripts": [
+            {
+              "text": {
+                "value": "INSERT INTO ctl.run_log\n(\n    run_id,\n    endpoint_name,\n    pages_loaded,\n    status,\n    started_at,\n    ended_at,\n    error_message\n)\nVALUES\n(\n    '@{pipeline().RunId}',\n    '@{pipeline().parameters.endpoint_name}',\n    @{length(variables('pages'))},\n    'FAILED',\n    GETDATE(),\n    GETDATE(),\n    'Failed pipeline'\n);",
+                "type": "Expression"
+              },
+              "type": "NonQuery"
+            }
+          ],
+          "scriptBlockExecutionTimeout": "02:00:00"
+        },
+        "connectionSettings": {
+          "name": "config",
+          "properties": {
+            "type": "FabricSqlDatabase",
+            "typeProperties": {
+              "artifactId": "25e0f5c8-01d0-9409-4f1e-187509d9076e",
+              "workspaceId": "00000000-0000-0000-0000-000000000000"
+            },
+            "externalReferences": {
+              "connection": "61d862fb-1c5e-49f0-bbd6-32e95af7a708"
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Script2",
+        "dependsOn": [
+          {
+            "activity": "ForEach1",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "endpoint_name": {
+        "type": "string"
+      },
+      "relative_url": {
+        "type": "string"
+      },
+      "tmdb_token": {
+        "type": "string"
+      },
+      "is_paged": {
+        "type": "bool"
+      },
+      "max_pages": {
+        "type": "int"
+      },
+      "target_folder": {
+        "type": "string"
+      },
+      "run_date": {
+        "type": "string",
+        "defaultValue": "utcNow()"
+      }
+    },
+    "variables": {
+      "pages": {
+        "type": "Array"
+      }
+    }
+  }
+}

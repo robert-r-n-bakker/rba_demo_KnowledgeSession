@@ -1,0 +1,22 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "PRD",
+  "variableOverrides": [
+    {
+      "name": "max_pages_override",
+      "value": 25
+    },
+    {
+      "name": "max_movies",
+      "value": 5000
+    },
+    {
+      "name": "alert_recipient",
+      "value": "team mailbox"
+    },
+    {
+      "name": "lakehouse_workspace_id",
+      "value": "181a2032-5d1a-4e55-b2ef-42a0d715b088"
+    }
+  ]
+}
