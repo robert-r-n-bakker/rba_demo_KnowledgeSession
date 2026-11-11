@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_chat_weekday",
+    "description": "Laugh-o-meter by weekday (Amsterdam time)"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "522acfbb-c972-4e1e-a233-5f59154c7e55"
+  }
+}
